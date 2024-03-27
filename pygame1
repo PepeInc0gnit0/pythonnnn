@@ -1,0 +1,141 @@
+#module
+import pygame,sys
+from random import randint,choice
+
+#screen setup
+pygame.init()
+screen_size = (800,600)#1. width, 2. height
+screen = pygame.display.set_mode(screen_size)
+pygame.display.set_caption("Test game")
+clock = pygame.time.Clock()
+running = True
+
+x = 0
+
+#player pos/setup
+player_x = 400
+player_y = 300
+player_size = 20
+player = pygame.Rect(player_x, player_y, player_size, player_size)
+
+
+#colors
+blue = (56, 132, 255)
+blue2 = (2, 128, 191)
+white = (255,255,255)
+red = (255, 38, 38)
+purple = (103, 49, 189)
+orange = (255, 106, 0)
+light_green = (107, 255, 107)
+pink = (252, 58, 168)
+
+#color list
+colors = [red,purple,orange,white,blue2,light_green,pink]
+
+#text - font
+font = pygame.font.Font(None, 25)
+#text - style
+text = font.render( f"points: {x}", True,blue)
+
+
+#set up random position objects
+points = [] #set-list for store objects
+#for loop to create objects
+for i in range(100):
+    rect_size = 10
+    rect = pygame.Rect(randint(0, screen_size[0] - rect_size),
+                       randint(0, screen_size[1] - rect_size),
+                       rect_size,rect_size)
+    points.append(rect)#add to list
+
+def random_point():
+    #global rect_size,rect,points
+    global points
+    rect_size = randint(3,25)
+    rect = pygame.Rect(randint(0, screen_size[0] - rect_size),
+                       randint(0, screen_size[1] - rect_size),
+                       rect_size,rect_size)
+    points.append(rect)#add to list
+    
+#game loop
+while running:
+
+    #ending game loop on "X" button
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    #set background color
+    screen.fill("black")
+    #draw text
+    screen.blit(text, (20,20))
+
+     # Update game state
+    for obj in points:
+        # Update object state (you can add more logic here)
+        pass
+
+    for obj in points:
+        pygame.draw.rect(screen, choice(colors), obj)  # Draw each object
+
+    for obj in points[:]:  # Use [:] to create a copy of the list
+        if player.colliderect(obj):
+            #when collide remove object
+            points.remove(obj)
+            #points
+            
+            x += randint(1,6)
+            text = font.render( f"points: {x}", True,blue)
+            #sife of player
+            if player_size <= 120:
+                player_size += 0.5
+                player.size = (player_size, player_size)
+            else:
+                pass
+            print(f"Player size: {player_size}")
+            print(f"point {x}")
+            #when object collide create new one on screen
+            random_point()
+            
+            
+    #draw player 1
+    pygame.draw.rect(screen, "red", player)
+
+    #keybindings
+    keys = pygame.key.get_pressed()
+    
+    #moving player = vertical and horizontal
+    if keys[pygame.K_w]:
+        if player.y == 0:
+            player.y -= 0
+        else:
+            player.y -= 5
+            print(f"y: {player.y}")
+    elif keys[pygame.K_s]:
+        if player.y == 600:
+            player.y += 0
+        else:
+            player.y += 5
+            print(f"y: {player.y}")
+    elif keys[pygame.K_a]:
+        if player.x == 0:
+            player.x = 0;
+        else:
+            player.x -= 5
+            print(f"x: {player.x}")
+    elif keys[pygame.K_d]:
+        if player.x == 800:
+            player.x = 0
+        else:
+            player.x += 5
+            print(f"x: {player.x}")
+        
+    #display changes on screen
+    pygame.display.flip()
+
+    #frames per second = FPS
+    clock.tick(60)
+
+#end program
+pygame.quit()   
+sys.exit()
